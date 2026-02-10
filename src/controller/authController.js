@@ -1,6 +1,7 @@
 import { validateLogin } from "../validator/loginValidator.js"
 import { findByEmail } from "../model/userModel.js"
 import { verifyPassword } from "../helper/argonHelper.js"
+import { encodeJwt } from "../helper/jwtHelper.js"
 
 export const login = async (req, res) => {
   console.log("Tentative de connexion...")
@@ -30,6 +31,14 @@ export const login = async (req, res) => {
     //4. Succès
     console.log("Connexion réussie !");
     delete user.hashpassword // On supprime le hash avant de renvoyer l'objet (sécurité)
+    //Création du JWT
+    const token = encodeJwt(user)
+    res.cookie("auth_token", `Bearer ${token}`,
+      {
+        httpOnly: true,
+        secure: false
+      }
+    )
     // N'oublie pas de renvoyer une réponse au client, sinon le navigateur va "mouliner"
     return res.status(200).json({ message: "Welcome!", user });
   } catch(error) {

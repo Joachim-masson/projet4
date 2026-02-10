@@ -1,9 +1,12 @@
 import db from "./db.js"
 
 export const createOne = async (location) => {
-  const {name, imagePath} = location
-  const [result] = await db.query("INSERT INTO `location` (name, `img-path`) VALUES (?,?)", [name, imagePath])
-  return result
+  const { name, "img-path": imgPath } = location; // On extrait img-path
+  const [result] = await db.query(
+    "INSERT INTO `location` (name, `img-path`) VALUES (?,?)", 
+    [name, imgPath]
+  );
+  return result;
 }
 
 export const findAll = async () => {

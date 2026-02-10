@@ -1,4 +1,5 @@
 import express from "express";
+import { upload } from "../middleware/uploadService.js"
 
 const router = express.Router()
 
@@ -10,9 +11,9 @@ router.get("/", getAll)
 // http://localhost:3310/api/characters/2
 router.get("/:characterId", getOne)
 // http://localhost:3310/api/characters
-router.post("/", addOne)
+router.post("/", upload.single("portrait-path"), addOne)
 // http://localhost:3310/api/characters/2
-router.patch("/:characterId", edit)
+router.patch("/:characterId", upload.single("portrait-path"), edit)
 // http://localhost:3310/api/characters/11
 router.delete("/:characterId", destroy);
 

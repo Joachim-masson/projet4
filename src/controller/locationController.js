@@ -1,4 +1,6 @@
 import {findAll, findOne, createOne, updateOne, deleteOne} from "../model/locationModel.js"
+import fs from "fs/promises";
+import path from "path";
 
 export const getAll = async (req, res) => {
   try { 
@@ -24,20 +26,24 @@ export const getOne = async (req, res) => {
 
 export const edit = async (req, res) => {
   const { locationId } = req.params;
-  const locationData = req.body;
+  let updateData = { ...req.body };
 
   try {
-    // On appelle le model avec l'ID et les données
-    const result = await updateOne(locationId, locationData);
-
-    // Si "affectedRows" est égal à 0, c'est que l'ID n'existe pas en base
-    if (result.affectedRows === 0) {
-      return res.status(404).send("Lieu non trouvé");
+    if (req.file) {
+      // 1. On cherche l'ancien lieu pour supprimer l'ancienne image
+      const [oldLocation] = await findOne(locationId);
+      if (oldLocation && oldLocation['img-path'] && oldLocation['img-path'] !== "default-location.png") {
+        const oldFilePath = path.join(process.cwd(), "public/uploads", oldLocation['img-path']);
+        await fs.unlink(oldFilePath).catch(() => console.log("Fichier déjà supprimé"));
+      }
+      // 2. On ajoute le nouveau nom de fichier
+      updateData['img-path'] = req.file.filename;
     }
 
-    // On renvoie un code 204 (No Content) ou 200 (OK)
+    const result = await updateOne(locationId, updateData);
+    if (result.affectedRows === 0) return res.status(404).send("Lieu non trouvé");
+
     res.status(200).json({ message: "Lieu modifié avec succès !" });
-    
   } catch (error) {
     console.error("Erreur lors de la modification :", error);
     res.sendStatus(500);
@@ -45,11 +51,17 @@ export const edit = async (req, res) => {
 };
 
 export const addOne = async (req, res) => {
-  try{
-    const result = await createOne(req.body)
-    res.status(201).send(result)
+  try {
+    const locationData = {
+      name: req.body.name,
+      // Si une image est présente, on prend son nom, sinon une image par défaut
+      "img-path": req.file ? req.file.filename : "default-location.png"
+    };
+
+    const result = await createOne(locationData);
+    res.status(201).send(result);
   } catch(error) {
-    console.error(error)
+    console.error("Erreur lors de l'ajout d'un lieu :", error)
     res.sendStatus(500);
   }
 }
@@ -57,15 +69,17 @@ export const addOne = async (req, res) => {
 export const destroy = async (req, res) => {
   const { locationId } = req.params;
 
-  try {
-    const result = await deleteOne(locationId);
+ try {
+    const [location] = await findOne(locationId);
+    if (!location) return res.status(404).json({ message: "Lieu non trouvé !" });
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Lieu non trouvé !" });
+    // Suppression du fichier sur le disque
+    if (location['img-path'] && location['img-path'] !== "default-location.png") {
+      const filePath = path.join(process.cwd(), "public/uploads", location['img-path']);
+      await fs.unlink(filePath).catch(() => console.log("Fichier physique introuvable"));
     }
 
-    // 204 No Content est le code standard pour une suppression réussie sans retour de données
-    // Ou 200 avec un message JSON pour confirmer
+    await deleteOne(locationId);
     res.status(200).json({ message: "Lieu supprimé avec succès !" });
     
   } catch (error) {

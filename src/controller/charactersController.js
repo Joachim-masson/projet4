@@ -1,4 +1,6 @@
 import {findAll, findOne, createOne, updateOne, deleteOne} from "../model/charactersModel.js"
+import path from "path"
+import fs from "fs/promises"
 
 export const getAll = async (req, res) => {
   try { 
@@ -24,20 +26,26 @@ export const getOne = async (req, res) => {
 
 export const edit = async (req, res) => {
   const { characterId } = req.params;
-  const characterData = req.body;
+  let updateData = { ...req.body };
 
   try {
-    // On appelle le model avec l'ID et les données
-    const result = await updateOne(characterId, characterData);
+    // Si un nouveau fichier est envoyé via Multer
+    if (req.file) {
+      // 1. Récupérer l'ancien nom de fichier
+      const [oldCharacter] = await findOne(characterId);
+      
+      // 2. Supprimer l'ancienne image du disque
+      if (oldCharacter && oldCharacter['portrait-path']) {
+        const oldFilePath = path.join(process.cwd(), "public/uploads", oldCharacter['portrait-path']);
+        await fs.unlink(oldFilePath).catch(err => console.log("Ancienne image déjà absente"));
+      }
 
-    // Si "affectedRows" est égal à 0, c'est que l'ID n'existe pas en base
-    if (result.affectedRows === 0) {
-      return res.status(404).send("Personnage non trouvé");
+      // 3. Ajouter le nouveau nom de fichier aux données à mettre à jour
+      updateData['portrait-path'] = req.file.filename;
     }
 
-    // On renvoie un code 204 (No Content) ou 200 (OK)
-    res.status(200).json({ message: "Modifié avec succès !" });
-    
+    const result = await updateOneModel(characterId, updateData);
+    res.status(200).json({ message: "Mise à jour effectuée avec succès" });
   } catch (error) {
     console.error("Erreur lors de la modification :", error);
     res.sendStatus(500);
@@ -46,7 +54,13 @@ export const edit = async (req, res) => {
 
 export const addOne = async (req, res) => {
   try{
-    const result = await createOne(req.body)
+ // Le chemin de l'image stockée est dans req.file.filename
+    const characterData = {
+      ...req.body,
+      "portrait-path": req.file ? req.file.filename : "default.png"
+    };
+
+    const result = await createOne(characterData);
     res.status(201).send(result)
   } catch(error) {
     console.error(error)
@@ -58,15 +72,28 @@ export const destroy = async (req, res) => {
   const { characterId } = req.params;
 
   try {
-    const result = await deleteOne(characterId);
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Character not found" });
+    // 1. On récupère d'abord les infos du personnage pour avoir le nom de l'image
+    const [character] = await findOne(characterId);
+    
+    if (!character) {
+      return res.status(404).json({ message: "Personnage non trouvé" });
     }
 
-    // 204 No Content est le code standard pour une suppression réussie sans retour de données
-    // Ou 200 avec un message JSON pour confirmer
-    res.status(200).json({ message: "Character deleted successfully" });
+    // 2. On supprime le fichier physique s'il existe
+    if (character['portrait-path']) {
+      const filePath = path.join(process.cwd(), "public/uploads", character['portrait-path']);
+      
+      try {
+        await fs.unlink(filePath); // Supprime le fichier
+        console.log("Fichier supprimé :", filePath);
+      } catch (err) {
+        console.error("Le fichier n'existe pas sur le disque, suppression BDD uniquement.");
+      }
+    }
+
+    // 3. On supprime enfin en BDD
+    await deleteOneModel(characterId);
+    res.status(200).json({ message: "Personnage et image supprimés avec succès" });
     
   } catch (error) {
     console.error("Erreur lors de la suppression :", error);
