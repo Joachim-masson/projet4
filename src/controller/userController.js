@@ -29,6 +29,7 @@ export const addOne =async (req, res) => {
     const result = await createOne({...req.body, hashpassword: hashedPassword})
     res.status(201).send(result)
   } catch(error) {
+    console.error(error)
     res.sendStatus(500);
   }
 }

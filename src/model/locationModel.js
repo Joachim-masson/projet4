@@ -1,15 +1,15 @@
 import db from "./db.js"
 
-export const createOne = async (character) => {
-  const {name, portraitPath, age, occupation, description} = character
-  const [result] = await db.query("INSERT INTO `characters` (name, `portrait-path`, age, occupation, description) VALUES (?,?,?,?,?)", [name, portraitPath, age, occupation, description])
+export const createOne = async (location) => {
+  const {name, imagePath} = location
+  const [result] = await db.query("INSERT INTO `location` (name, `img-path`) VALUES (?,?)", [name, imagePath])
   return result
 }
 
 export const findAll = async () => {
   try {
-    const characters = await db.query("SELECT * FROM characters")
-    return characters
+    const locations = await db.query("SELECT * FROM location")
+    return locations
   } catch (error) {
     console.error(error)
   }
@@ -17,8 +17,8 @@ export const findAll = async () => {
 
 export const findOne = async (id) => {
   try {
-    const character = await db.query("SELECT * FROM characters WHERE idcharacters=?", [id])
-    return character
+    const location = await db.query("SELECT * FROM location WHERE idlocation=?", [id])
+    return location
   }catch(error) {
     console.error(error)
   }
@@ -26,7 +26,7 @@ export const findOne = async (id) => {
 
 export const updateOne = async (id, fields) => {
   // 1. On définit les colonnes autorisées (Whitelist)
-  const allowedColumns = ['name', 'portrait-Path', 'age', 'occupation', 'description'];
+  const allowedColumns = ['name', 'img-path'];
 
   // 2. On filtre les clés reçues pour ne garder que les bonnes
   const safeKeys = Object.keys(fields).filter(key => allowedColumns.includes(key));
@@ -46,7 +46,7 @@ export const updateOne = async (id, fields) => {
 
   // 5. Exécution
   const [result] = await db.query(
-    `UPDATE \`characters\` SET ${querySet} WHERE idcharacters = ?`,
+    `UPDATE \`location\` SET ${querySet} WHERE idlocation = ?`,
     values
   );
 
@@ -56,7 +56,7 @@ export const updateOne = async (id, fields) => {
 export const deleteOne = async (id) => {
   try {
     const [result] = await db.query(
-      "DELETE FROM `characters` WHERE idcharacters = ?",
+      "DELETE FROM `location` WHERE idlocation = ?",
       [id]
     );
     return result;
