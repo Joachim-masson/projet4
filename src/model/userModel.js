@@ -1,8 +1,8 @@
 import db from "./db.js"
 
 export const createOne = async (user) => {
-  const {name, email, hashPassword, habilitation} = user
-  const [result] = await db.query("INSERT INTO `users` (name, email, hashpassword, habilitation) VALUES (?,?,?,?)", [name, email, hashPassword, habilitation])
+  const {name, email, hashpassword, habilitation} = user
+  const [result] = await db.query("INSERT INTO `users` (name, email, hashpassword, habilitation) VALUES (?,?,?,?)", [name, email, hashpassword, habilitation])
   return result
 }
 

@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const validatelogin = (user) => {
+export const validateLogin = (user) => {
   
   const result = Joi.object({
     email: Joi.string().email().presence("required"),

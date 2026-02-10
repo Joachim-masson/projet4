@@ -11,6 +11,6 @@ export const hashPassword = (plainPassword) => {
   return argon2.hash(plainPassword, hashingOption)
 }
 
-export const verifyPassword = (plainPassword, hashPassword) => {
-  return argon2.verify(hashPassword, plainPassword );
+export const verifyPassword = (hashedPassword, plainPassword) => {
+  return argon2.verify(hashedPassword, plainPassword );
 }

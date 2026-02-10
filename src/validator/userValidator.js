@@ -22,4 +22,3 @@ export const validateUser = (user) => {
     }
     return false
 }
-

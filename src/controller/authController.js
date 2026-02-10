@@ -1,24 +1,40 @@
-import validateLogin from "../validator/loginValidator.js"
-import findByEmail from "../model/userModel.js"
+import { validateLogin } from "../validator/loginValidator.js"
+import { findByEmail } from "../model/userModel.js"
 import { verifyPassword } from "../helper/argonHelper.js"
 
 export const login = async (req, res) => {
-  console.log("login !")
+  console.log("Tentative de connexion...")
   try {
+    //1. Validation Joi
     const errors = validateLogin(req.body)
-    console.log(errors)
     if(errors) {
-      return res.status(401).send(errors)
+      return res.status(400).send(errors)
     }
-    console.log(req.body)
-    const [ user ] = await findByEmail(req.body.email)
-    const passwordVerification = await verifyPassword(req.body.password, user.password)
+
+    //2. Recherche de l'utilisateur
+    const [ user ] = await findByEmail(req.body.email);
+
+    // IMPORTANT : Vérifier si l'utilisateur existe avant de continuer
+    if (!user) {
+      console.log("Utilisateur non trouvé");
+      return res.status(401).send("Invalid Credentials")
+    }
+
+    //3. Vérification du mot de passe (Ordre : HASH d'abord, PLAIN après)
+    const passwordVerification = await verifyPassword(user.hashpassword, req.body.password )
     if (!passwordVerification){
+      console.log("Mot de passe incorrect");
       return res.status(401).send("Invalid Credentials");
     }
-    delete user.password
+
+    //4. Succès
+    console.log("Connexion réussie !");
+    delete user.hashpassword // On supprime le hash avant de renvoyer l'objet (sécurité)
+    // N'oublie pas de renvoyer une réponse au client, sinon le navigateur va "mouliner"
+    return res.status(200).json({ message: "Welcome!", user });
   } catch(error) {
-    console.error(error)
+    console.error("Erreur serveur lors du login :", error);
+    return res.status(500).send("Internal Server Error");
   }
 }
 

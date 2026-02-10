@@ -22,5 +22,11 @@ export const getOne = async (req, res) => {
   }
 }
 
-
-
+export const addOne =async (req, res) => {
+try{
+    const result = await createOne(req.body)
+    res.status(201).send(result)
+  } catch(error) {
+    res.sendStatus(500);
+  }
+}

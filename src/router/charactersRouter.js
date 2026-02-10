@@ -2,12 +2,14 @@ import express from "express";
 
 const router = express.Router()
 
-import {getAll, getOne} from "../controller/charactersController.js"
+import {getAll, getOne, addOne} from "../controller/charactersController.js"
 
 
-// get http://localhost:3310/api/characters
+// http://localhost:3310/api/characters
 router.get("/", getAll)
-// get http://localhost:3310/api/characters/2
+// http://localhost:3310/api/characters/2
 router.get("/:characterId", getOne)
+// http://localhost:3310/api/characters
+router.post("/", addOne)
 
 export default router

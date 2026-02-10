@@ -26,7 +26,7 @@ export const addOne =async (req, res) => {
     const hashedPassword = await hashPassword(req.body.password)
     console.log(hashedPassword);
 
-    const result = await createOne({...req.body, password: hashedPassword})
+    const result = await createOne({...req.body, hashpassword: hashedPassword})
     res.status(201).send(result)
   } catch(error) {
     res.sendStatus(500);
