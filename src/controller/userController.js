@@ -1,4 +1,4 @@
-import {readOne, readAll, createOne } from "../model/userModel.js"
+import {readOne, readAll, createOne, updateOne, deleteOne } from "../model/userModel.js"
 import { validateUser } from "../validator/userValidator.js"
 import { hashPassword } from "../helper/argonHelper.js"
 
@@ -33,3 +33,33 @@ export const addOne =async (req, res) => {
     res.sendStatus(500);
   }
 }
+
+export const edit = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const result = await updateOne(id, req.body);
+    if (result.affectedRows === 0) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204); // Succès, pas de contenu à renvoyer
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+
+export const destroy = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const result = await deleteOne(id);
+    if (result.affectedRows === 0) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};

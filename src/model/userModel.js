@@ -34,6 +34,21 @@ export const findByEmail = async (email) => {
   }
 }
 
-export const updateOne = async () => {}
+export const updateOne = async (id, fields) => {
+  // On génère dynamiquement la requête en fonction des champs envoyés (comme habilitation)
+  const querySet = Object.keys(fields)
+    .map((key) => `${key} = ?`)
+    .join(", ");
+  const values = Object.values(fields);
 
-export const deleteOne = async () => {}
+  const [result] = await db.query(
+    `UPDATE users SET ${querySet} WHERE idusers = ?`,
+    [...values, id]
+  );
+  return result;
+};
+
+export const deleteOne = async (id) => {
+  const [result] = await db.query("DELETE FROM users WHERE idusers = ?", [id]);
+  return result;
+};
