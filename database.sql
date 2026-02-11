@@ -25,12 +25,12 @@ DROP TABLE IF EXISTS `characters`;
 CREATE TABLE `characters` (
   `idcharacters` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8mb3_bin NOT NULL,
-  `portrait-path` varchar(100) COLLATE utf8mb3_bin DEFAULT NULL,
+  `portrait_path` varchar(100) COLLATE utf8mb3_bin DEFAULT NULL,
   `age` int DEFAULT NULL,
   `occupation` varchar(100) COLLATE utf8mb3_bin DEFAULT NULL,
   `description` text COLLATE utf8mb3_bin,
   PRIMARY KEY (`idcharacters`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,9 +80,9 @@ DROP TABLE IF EXISTS `location`;
 CREATE TABLE `location` (
   `idlocation` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) COLLATE utf8mb3_bin DEFAULT NULL,
-  `img-path` varchar(45) COLLATE utf8mb3_bin DEFAULT NULL,
+  `img_path` varchar(45) COLLATE utf8mb3_bin DEFAULT NULL,
   PRIMARY KEY (`idlocation`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,7 +109,7 @@ CREATE TABLE `users` (
   `hashpassword` varchar(100) COLLATE utf8mb3_bin DEFAULT NULL,
   `habilitation` varchar(45) COLLATE utf8mb3_bin NOT NULL,
   PRIMARY KEY (`idusers`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,12 +118,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES 
-(1,'Visitor','jo@visitor.fr',NULL,'visitor'),
-(2,'Creator','jo@create.fr',NULL,'createAdmin'),
-(3,'Deletor','jo@delete.fr',NULL,'deleteAdmin'),
-(4,'Updator','jo@update.fr',NULL,'updateAdmin'),
-(5,'Full','jo@full.fr','$argon2id$v=19$m=65536,t=5,p=1$BSZ2CDgSD6IAwKuy7KNKyw$M0fGcYYV8bOiDjgPx6HUY3v/mVtf4JEoZLt8QXyfZ84','fullAdmin');
+INSERT INTO `users` VALUES (1,'Visitor','jo@visitor.fr',NULL,'visitor'),(2,'Creator','jo@create.fr',NULL,'createAdmin'),(3,'Deletor','jo@delete.fr',NULL,'deleteAdmin'),(4,'Updator','jo@update.fr',NULL,'updateAdmin'),(5,'Full','jo@full.fr','$argon2id$v=19$m=65536,t=5,p=1$BSZ2CDgSD6IAwKuy7KNKyw$M0fGcYYV8bOiDjgPx6HUY3v/mVtf4JEoZLt8QXyfZ84','fullAdmin');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -136,4 +131,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-09 15:35:42
+-- Dump completed on 2026-02-11 11:43:42
