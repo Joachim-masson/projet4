@@ -2,7 +2,7 @@ import db from "./db.js"
 
 export const createOne = async (character) => {
   const {name, portraitPath, age, occupation, description} = character
-  const [result] = await db.query("INSERT INTO `characters` (name, `portrait-path`, age, occupation, description) VALUES (?,?,?,?,?)", [name, portraitPath, age, occupation, description])
+  const [result] = await db.query("INSERT INTO `characters` (name, `portrait_path`, age, occupation, description) VALUES (?,?,?,?,?)", [name, portraitPath, age, occupation, description])
   return result
 }
 
@@ -26,7 +26,7 @@ export const findOne = async (id) => {
 
 export const updateOne = async (id, fields) => {
   // 1. On définit les colonnes autorisées (Whitelist)
-  const allowedColumns = ['name', 'portrait-Path', 'age', 'occupation', 'description'];
+  const allowedColumns = ['name', 'portrait_path', 'age', 'occupation', 'description'];
 
   // 2. On filtre les clés reçues pour ne garder que les bonnes
   const safeKeys = Object.keys(fields).filter(key => allowedColumns.includes(key));

@@ -22,7 +22,7 @@ const __dirname = path.dirname(__filename);
 
 // On rend le dossier "public" accessible via l'URL /public
 // Si tu veux accéder directement via /uploads, utilise : app.use("/uploads", ...)
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "..", "public", "uploads")));
 
 
 // bodyParser 
