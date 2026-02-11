@@ -1,8 +1,8 @@
 import db from "./db.js"
 
 export const createOne = async (character) => {
-  const {name, portraitPath, age, occupation, description} = character
-  const [result] = await db.query("INSERT INTO `characters` (name, `portrait_path`, age, occupation, description) VALUES (?,?,?,?,?)", [name, portraitPath, age, occupation, description])
+  const {name, portrait_path, age, occupation, description} = character
+  const [result] = await db.query("INSERT INTO `characters` (name, `portrait_path`, age, occupation, description) VALUES (?,?,?,?,?)", [name, portrait_path, age, occupation, description])
   return result
 }
 

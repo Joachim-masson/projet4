@@ -9,9 +9,9 @@ router.get("/", getAll)
 // http://localhost:3310/api/location/2
 router.get("/:locationId", getOne)
 // http://localhost:3310/api/location
-router.post("/", upload.single("img-path"), addOne)
+router.post("/", upload.single("img_path"), addOne)
 // http://localhost:3310/api/location/2
-router.patch("/:locationId", upload.single("img-path"), edit)
+router.patch("/:locationId", upload.single("img_path"), edit)
 // http://localhost:3310/api/location/11
 router.delete("/:locationId", destroy);
 

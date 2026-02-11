@@ -32,12 +32,12 @@ export const edit = async (req, res) => {
     if (req.file) {
       // 1. On cherche l'ancien lieu pour supprimer l'ancienne image
       const [oldLocation] = await findOne(locationId);
-      if (oldLocation && oldLocation['img-path'] && oldLocation['img-path'] !== "default-location.png") {
-        const oldFilePath = path.join(process.cwd(), "public/uploads", oldLocation['img-path']);
+      if (oldLocation && oldLocation['img_path'] && oldLocation['img_path'] !== "default-location.png") {
+        const oldFilePath = path.join(process.cwd(), "public/uploads", oldLocation['img_path']);
         await fs.unlink(oldFilePath).catch(() => console.log("Fichier déjà supprimé"));
       }
       // 2. On ajoute le nouveau nom de fichier
-      updateData['img-path'] = req.file.filename;
+      updateData['img_path'] = req.file.filename;
     }
 
     const result = await updateOne(locationId, updateData);
@@ -55,7 +55,7 @@ export const addOne = async (req, res) => {
     const locationData = {
       name: req.body.name,
       // Si une image est présente, on prend son nom, sinon une image par défaut
-      "img-path": req.file ? req.file.filename : "default-location.png"
+      "img_path": req.file ? req.file.filename : "default-location.png"
     };
 
     const result = await createOne(locationData);
@@ -74,8 +74,8 @@ export const destroy = async (req, res) => {
     if (!location) return res.status(404).json({ message: "Lieu non trouvé !" });
 
     // Suppression du fichier sur le disque
-    if (location['img-path'] && location['img-path'] !== "default-location.png") {
-      const filePath = path.join(process.cwd(), "public/uploads", location['img-path']);
+    if (location['img_path'] && location['img_path'] !== "default-location.png") {
+      const filePath = path.join(process.cwd(), "public/uploads", location['img_path']);
       await fs.unlink(filePath).catch(() => console.log("Fichier physique introuvable"));
     }
 

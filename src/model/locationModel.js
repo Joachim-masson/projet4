@@ -1,9 +1,9 @@
 import db from "./db.js"
 
 export const createOne = async (location) => {
-  const { name, "img-path": imgPath } = location; // On extrait img-path
+  const { name, "img_path": imgPath } = location; // On extrait img_path
   const [result] = await db.query(
-    "INSERT INTO `location` (name, `img-path`) VALUES (?,?)", 
+    "INSERT INTO `location` (name, `img_path`) VALUES (?,?)", 
     [name, imgPath]
   );
   return result;
@@ -29,7 +29,7 @@ export const findOne = async (id) => {
 
 export const updateOne = async (id, fields) => {
   // 1. On définit les colonnes autorisées (Whitelist)
-  const allowedColumns = ['name', 'img-path'];
+  const allowedColumns = ['name', 'img_path'];
 
   // 2. On filtre les clés reçues pour ne garder que les bonnes
   const safeKeys = Object.keys(fields).filter(key => allowedColumns.includes(key));
