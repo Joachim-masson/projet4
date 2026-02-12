@@ -1,10 +1,10 @@
 import db from "./db.js"
 
 export const createOne = async (location) => {
-  const { name, "img_path": imgPath } = location; // On extrait img_path
+  const { name, img_path } = location; // On extrait img_path
   const [result] = await db.query(
     "INSERT INTO `location` (name, `img_path`) VALUES (?,?)", 
-    [name, imgPath]
+    [name, img_path]
   );
   return result;
 }
@@ -22,6 +22,22 @@ export const findCharactersByLocation = async (id) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+// Permet de lier des personnages à un lieu
+export const linkCharactersToLocation = async (locationId, characterIds) => {
+  // On commence par vider les anciens liens pour éviter les doublons lors d'un update
+  await db.query("DELETE FROM characters_has_location WHERE location_idlocation = ?", [locationId]);
+  
+  if (!characterIds || characterIds.length === 0) return;
+
+  // On prépare l'insertion multiple
+  // characterIds doit être un tableau d'IDs
+  const values = characterIds.map(charId => [charId, locationId]);
+  return db.query(
+    "INSERT INTO characters_has_location (characters_idcharacters, location_idlocation) VALUES ?",
+    [values]
+  );
 };
 
 export const findAll = async () => {

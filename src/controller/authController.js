@@ -2,6 +2,7 @@ import { validateLogin } from "../validator/loginValidator.js"
 import { findByEmail } from "../model/userModel.js"
 import { verifyPassword } from "../helper/argonHelper.js"
 import { encodeJwt } from "../helper/jwtHelper.js"
+import { decodeJWT } from "../helper/jwtHelper.js";
 
 export const login = async (req, res) => {
   console.log("Tentative de connexion...")
@@ -47,3 +48,35 @@ export const login = async (req, res) => {
   }
 }
 
+export const checkAuth = async (req, res) => {
+  // 1. Récupérer le token du cookie
+  const token = req.cookies?.auth_token;
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  try {
+    // 2. Nettoyer le string "Bearer ..." pour n'avoir que le hash
+    const pureToken = token.replace("Bearer ", "");
+    
+    // 3. Décoder le JWT
+    const decoded = decodeJWT(pureToken);
+    
+    // 4. Renvoyer les données utilisateur contenues dans le payload du JWT
+    // On enlève le mot de passe par sécurité s'il y est
+    delete decoded.hashpassword;
+    delete decoded.iat;
+    delete decoded.exp;
+
+    return res.status(200).json(decoded);
+  } catch (err) {
+    return res.sendStatus(401);
+  }
+};
+
+export const logout = (req, res) => {
+  // On supprime le cookie "auth_token"
+  res.clearCookie("auth_token");
+  res.status(200).json({ message: "User logged out" });
+};

@@ -1,4 +1,4 @@
-import {findAll, findOne, createOne, updateOne, deleteOne, findCharactersByLocation} from "../model/locationModel.js"
+import {findAll, findOne, createOne, updateOne, deleteOne, findCharactersByLocation, linkCharactersToLocation} from "../model/locationModel.js"
 import fs from "fs/promises";
 import path from "path";
 
@@ -44,21 +44,31 @@ export const edit = async (req, res) => {
   let updateData = { ...req.body };
 
   try {
+    // 1. Gestion de l'image (ton code actuel)
     if (req.file) {
-      // 1. On cherche l'ancien lieu pour supprimer l'ancienne image
       const [oldLocation] = await findOne(locationId);
-      if (oldLocation && oldLocation['img_path'] && oldLocation['img_path'] !== "default-location.png") {
+      if (oldLocation && oldLocation['img_path'] && oldLocation['img_path'] !== "default.webp") {
         const oldFilePath = path.join(process.cwd(), "public/uploads", oldLocation['img_path']);
         await fs.unlink(oldFilePath).catch(() => console.log("Fichier déjà supprimé"));
       }
-      // 2. On ajoute le nouveau nom de fichier
       updateData['img_path'] = req.file.filename;
     }
 
-    const result = await updateOne(locationId, updateData);
-    if (result.affectedRows === 0) return res.status(404).send("Lieu non trouvé");
+    // 2. Mise à jour de la table location
+    await updateOne(locationId, updateData);
 
-    res.status(200).json({ message: "Lieu modifié avec succès !" });
+    // 3. Mise à jour des liens personnages
+    if (req.body.characterIds) {
+      const charIds = req.body.characterIds.split(',').map(Number);
+      await linkCharactersToLocation(locationId, charIds);
+    }
+
+    // 4. RÉCUPÉRATION DU LIEU MIS À JOUR (Indispensable pour le Front)
+    const [updatedLocation] = await findOne(locationId);
+    
+    // On renvoie l'objet complet
+    res.status(200).json(updatedLocation);
+
   } catch (error) {
     console.error("Erreur lors de la modification :", error);
     res.sendStatus(500);
@@ -69,27 +79,38 @@ export const addOne = async (req, res) => {
   try {
     const locationData = {
       name: req.body.name,
-      // Si une image est présente, on prend son nom, sinon une image par défaut
-      "img_path": req.file ? req.file.filename : "default-location.png"
+      img_path: req.file ? req.file.filename : "default.webp"
     };
 
     const result = await createOne(locationData);
-    res.status(201).send(result);
+    const newLocationId = result.insertId;
+
+    // Si des personnages sont envoyés (format "1,2,3")
+    if (req.body.characterIds && req.body.characterIds.trim() !== "") {
+      const charIds = req.body.characterIds.split(',').map(Number);
+      await linkCharactersToLocation(newLocationId, charIds);
+    }
+
+    res.status(201).json({ idlocation: newLocationId, ...locationData });
   } catch(error) {
-    console.error("Erreur lors de l'ajout d'un lieu :", error)
+    console.error("Erreur détaillée addOne location:", error);
     res.sendStatus(500);
   }
-}
+};
 
 export const destroy = async (req, res) => {
   const { locationId } = req.params;
 
  try {
+    if (!locationId || locationId === "undefined") {
+      return res.status(400).json({ message: "ID de lieu manquant ou invalide" });
+    }
+
     const [location] = await findOne(locationId);
     if (!location) return res.status(404).json({ message: "Lieu non trouvé !" });
 
     // Suppression du fichier sur le disque
-    if (location['img_path'] && location['img_path'] !== "default-location.png") {
+    if (location['img_path'] && location['img_path'] !== "default.webp") {
       const filePath = path.join(process.cwd(), "public/uploads", location['img_path']);
       await fs.unlink(filePath).catch(() => console.log("Fichier physique introuvable"));
     }
