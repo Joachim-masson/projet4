@@ -9,6 +9,21 @@ export const createOne = async (location) => {
   return result;
 }
 
+//Requête pour avoir les personnages en fonction du lieu
+export const findCharactersByLocation = async (id) => {
+  try {
+    const charLoc = await db.query(
+      `SELECT c.* FROM characters c
+       JOIN characters_has_location chl ON c.idcharacters = chl.characters_idcharacters
+       WHERE chl.location_idlocation = ?`,
+      [id]
+    );
+    return charLoc;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const findAll = async () => {
   try {
     const locations = await db.query("SELECT * FROM location")

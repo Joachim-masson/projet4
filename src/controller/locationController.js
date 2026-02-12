@@ -1,4 +1,4 @@
-import {findAll, findOne, createOne, updateOne, deleteOne} from "../model/locationModel.js"
+import {findAll, findOne, createOne, updateOne, deleteOne, findCharactersByLocation} from "../model/locationModel.js"
 import fs from "fs/promises";
 import path from "path";
 
@@ -23,6 +23,21 @@ export const getOne = async (req, res) => {
     res.sendStatus(500)
   }
 }
+
+//Route pour avoir les personnages en fonction du lieu
+export const getCharactersByLocation = async (req, res) => {
+  const { id } = req.params
+  try{
+    if(isNaN(id)){
+      return res.status(400).send("L'ID doit être un nombre");
+    }
+    const [charLoc] = await findCharactersByLocation(id)
+    res.json(charLoc);
+  } catch (error){
+    res.sendStatus(500)
+  }
+}
+
 
 export const edit = async (req, res) => {
   const { locationId } = req.params;
