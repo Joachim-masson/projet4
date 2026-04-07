@@ -1,8 +1,10 @@
 <h1 align="center" id="title">Project4: The Simpsons</h1>
 
-<p id="description">A website showcasing the animated series The Simpsons/Back-end You need the front-end to use this back-end:https://github.com/Joachim-masson/Projet4-Front</p>
+<p id="description">A website showcasing the animated series The Simpsons/Back-end. You need the front-end to use this back-end: https://github.com/Joachim-masson/Projet4-Front</p>
 
-<p align="center"><img src="![Node.js](https://img.shields.io/badge/Node.js-43853D?logo=node.js&amp;logoColor=white)" alt="shields"><img src="![Express.js](https://img.shields.io/badge/Express.js-404D59?logo=express&amp;logoColor=white)" alt="shields"><img src="![MySQL](https://img.shields.io/badge/MySQL-005C84?logo=mysql&amp;logoColor=white)" alt="shields"></p>
+![Node.js](https://img.shields.io/badge/Node.js-43853D?logo=node.js&amp;logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?logo=express&amp;logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?logo=mysql&amp;logoColor=white)
 
 <h2>Project Screenshots:</h2>
 
