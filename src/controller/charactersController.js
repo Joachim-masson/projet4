@@ -71,7 +71,8 @@ export const addOne = async (req, res) => {
     };
 
     const result = await createOne(characterData);
-    res.status(201).send(result)
+    const [rows] = await findOne(result.insertId);
+    res.status(201).send(rows[0])
   } catch(error) {
     console.error(error)
     res.sendStatus(500);
